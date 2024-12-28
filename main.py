@@ -9,7 +9,7 @@ import numpy as np
 app = FastAPI()
 
 # Cargar la base de datos 'dataset_unificado'
-df_merged = pd.read_csv("C:/Users/guard/OneDrive/Desktop/Henry Data Science/Proyecto MLOps/datasets/dataset_filtrado.csv", sep=",")
+df_merged = pd.read_csv("datasets/dataset_filtrado.csv", sep=",")
 
 # Asegúrate de que la columna 'release_date' está en formato de fecha
 df_merged['release_date'] = pd.to_datetime(df_merged['release_date'])
