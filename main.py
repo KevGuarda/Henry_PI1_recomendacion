@@ -9,7 +9,7 @@ import numpy as np
 app = FastAPI()
 
 # Cargar la base de datos 'dataset_unificado'
-df_merged = pd.read_csv("C:/Users/guard/OneDrive/Desktop/Henry Data Science/Proyecto MLOps/datasets/dataset_filtrado.csv", sep=",")
+df_merged = pd.read_csv("datasets/dataset_unificado.csv", sep=",")
 
 # Asegúrate de que la columna 'release_date' está en formato de fecha
 df_merged['release_date'] = pd.to_datetime(df_merged['release_date'])
@@ -127,23 +127,34 @@ async def get_director(nombre_director: str = Query(..., description="Ingrese aq
 
 # Función de Recomendación
 
+# Cargar la base de datos 'dataset_unificado'
+df_filtered = pd.read_csv("datasets/dataset_filtrado_5000.csv", sep=",")
+
 # Preprocesamiento de Datos - Utilizando 'title' para la recomendación
-df_merged['title'] = df_merged['title'].fillna('')
+df_filtered['title'] = df_filtered['title'].fillna('')
 
 # Vectorización de Textos - Usar TfidfVectorizer para transformar los títulos en vectores
 tfidf = TfidfVectorizer(stop_words='english')
-tfidf_matrix = tfidf.fit_transform(df_merged['title'])
+tfidf_matrix = tfidf.fit_transform(df_filtered['title'])
 
 # Cálculo de Similaridad - Utilizar la similaridad del coseno
 cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
 # Crear una serie con los títulos de las películas como índice
-indices = pd.Series(df_merged.index, index=df_merged['title']).drop_duplicates()
+indices = pd.Series(df_filtered.index, index=df_filtered['title']).drop_duplicates()
 
-def get_recommendations(title, cosine_sim, df_merged):
+def get_recommendations(title, cosine_sim, df_filtered):
+    # Normalizar el título
+    title = title.strip().lower()  # Eliminar espacios y convertir a minúsculas
+    
     # Obtener el índice de la película que coincide con el título
-    idx = df_merged[df_merged['title'] == title].index[0]
+    matching_movies = df_filtered[df_filtered['title'].str.lower().str.contains(title)]
+    
+    if matching_movies.empty:
+        raise ValueError(f"No se encontró ninguna película con el título: '{title}'")
 
+    idx = matching_movies.index[0]
+    
     # Obtener las puntuaciones de similaridad para esa película
     sim_scores = list(enumerate(cosine_sim[idx]))
 
@@ -151,15 +162,15 @@ def get_recommendations(title, cosine_sim, df_merged):
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
     # Obtener las puntuaciones de las 5 películas más similares
-    sim_scores = sim_scores[1:6]
+    sim_scores = sim_scores[1:6]  # Cambiado a 5
 
     # Obtener los índices de las películas
     movie_indices = [i[0] for i in sim_scores]
 
     # Devolver los títulos de las películas recomendadas
-    return df_merged['title'].iloc[movie_indices].tolist()
+    return df_filtered['title'].iloc[movie_indices].tolist()
 
 # Crear el endpoint de recomendación
 @app.get("/recomendacion/")
 async def recomendacion(titulo: str = Query(..., description="Ingrese aquí el título de la película")) -> List[str]:
-    return get_recommendations(titulo, cosine_sim, df_merged)
+    return get_recommendations(titulo, cosine_sim, df_filtered)
