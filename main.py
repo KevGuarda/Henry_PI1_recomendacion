@@ -128,7 +128,7 @@ async def get_director(nombre_director: str = Query(..., description="Ingrese aq
 # Función de Recomendación
 
 # Cargar la base de datos 'dataset_unificado'
-df_filtered = pd.read_csv("datasets/dataset_filtrado_25000.csv", sep=",")
+df_filtered = pd.read_csv("datasets/dataset_filtrado_20000.csv", sep=",")
 
 # Preprocesamiento de Datos - Utilizando 'title' para la recomendación
 df_filtered['title'] = df_filtered['title'].fillna('')
