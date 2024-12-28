@@ -27,6 +27,7 @@ proyecto_recomendacion/
 │
 ├── datasets/
 │   └── dataset_unificado.csv
+│   └── dataset_filtrado_10000.csv
 │
 ├── main.py
 │
