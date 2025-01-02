@@ -130,6 +130,6 @@ curl -X GET "http://127.0.0.1:8000/recomendacion/?titulo=Batman"
 
 Las contribuciones son bienvenidas. Siéntete libre de abrir issues o pull requests.
 
-## Licencia
+## Video Explicativo
 
-Este proyecto está licenciado bajo la Licencia MIT. Para más detalles, consulta el archivo LICENSE.
+En el siguiente enlace podrán ver un video explicativo del proyecto: https://drive.google.com/file/d/1qUKAcVeVgoy5P0c5MwM9-P1q8bZJm8p_/view?usp=sharing.
